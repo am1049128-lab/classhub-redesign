@@ -1,320 +1,275 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import logoFtia from '../assets/logoftia.jpeg';
-import { useTheme } from '../context/ThemeContext';
 
-function MenuIcon({ open }) {
-  return open ? (
-    <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
-  ) : (
-    <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
-  );
-}
-
-/* Ikon User Shield: perisai otoritas dengan siluet admin di dalamnya.
-   Memakai currentColor agar otomatis mengikuti warna teks & hover navbar. */
-function AdminShieldIcon({ className = 'w-4 h-4' }) {
+/* SVG Icons */
+function HomeIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      {/* Siluet perisai */}
-      <path d="M12 3l7 2.6v5.2c0 4.3-2.9 7.9-7 9.2-4.1-1.3-7-4.9-7-9.2V5.6L12 3z" />
-      {/* Kepala admin */}
-      <circle cx="12" cy="10" r="1.9" />
-      {/* Bahu admin */}
-      <path d="M8.6 16.2c.5-1.6 1.8-2.5 3.4-2.5s2.9.9 3.4 2.5" />
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
     </svg>
   );
 }
-import { classInfo } from '../data/dummy';
 
-const navItems = [
-  { id: 'beranda', label: 'Beranda', icon: '🏠' },
-  { id: 'prodi', label: 'Prodi & Anggota', icon: '👥' },
-  { id: 'jadwal', label: 'Jadwal Kuliah', icon: '📅' },
-  { id: 'tugas', label: 'Tugas', icon: '📝' },
-  { id: 'menfest', label: 'Menfest', icon: '💌' },
-];
+function UsersIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+  );
+}
 
-export default function Navbar({ 
+function CalendarIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  );
+}
+
+function TaskIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+    </svg>
+  );
+}
+
+function HeartIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
+
+export default function Navbar({
   activePage,
   setActivePage,
   selectedProdi,
   setSelectedProdi,
-  prodiList = []
+  prodiList = ['Ilmu Komputer', 'Sistem Informasi', 'Aktuaria'],
 }) {
-  const { isDark, toggleTheme } = useTheme();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [prodiDropdownOpen, setProdiDropdownOpen] = useState(false);
-  const [mobileProdiOpen, setMobileProdiOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setProdiDropdownOpen(false);
+      }
+    }
+    if (prodiDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [prodiDropdownOpen]);
 
   const handleNavClick = (pageId, prodiName = null) => {
     setActivePage(pageId);
     if (prodiName && setSelectedProdi) {
       setSelectedProdi(prodiName);
     }
-    setMobileMenuOpen(false);
     setProdiDropdownOpen(false);
   };
 
+  const navItems = [
+    { id: 'beranda', label: 'Beranda', Icon: HomeIcon },
+    { id: 'prodi', label: 'Prodi & Anggota', Icon: UsersIcon },
+    { id: 'jadwal', label: 'Jadwal', Icon: CalendarIcon },
+    { id: 'tugas', label: 'Tugas', Icon: TaskIcon },
+    { id: 'menfest', label: 'Menfest', Icon: HeartIcon },
+  ];
+
   return (
-    <header className={`sticky top-0 z-50 transition-colors duration-200 border-b backdrop-blur-md ${
-      isDark 
-        ? 'bg-gray-950/90 border-gray-800 text-white' 
-        : 'bg-white/95 border-gray-200 text-gray-900 shadow-sm'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-2">
-          
-          {/* Logo & Brand */}
-          <div 
-            onClick={() => handleNavClick('beranda')}
-            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none min-w-0 flex-1"
-          >
+    <header className="sticky top-0 z-50 w-full bg-[#09090B]/95 backdrop-blur-md border-b border-white/[0.08] shadow-lg">
+      <div className="mx-auto max-w-7xl h-16 sm:h-18 px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2">
+        {/* Kiri: Brand Logo & Kampus */}
+        <button
+          type="button"
+          onClick={() => handleNavClick('beranda')}
+          className="flex items-center gap-2.5 shrink-0 group text-left"
+          title="Class Hub FTIA"
+        >
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-white/20 bg-[#16161C] shrink-0 shadow-md group-hover:scale-105 transition-transform duration-200">
             <img
               src={logoFtia}
               alt="Logo FTIA"
-              className="h-10 w-10 sm:h-11 sm:w-11 object-cover rounded-xl shadow-sm ring-1 ring-black/5 dark:ring-white/10 shrink-0"
+              className="w-full h-full object-cover"
+              width={40}
+              height={40}
             />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                  Class Hub
-                </span>
-                <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                  FTIA
-                </span>
-              </div>
-              <p className="text-[10px] sm:text-xs text-slate-400 truncate font-medium">
-                {classInfo.name}
-              </p>
+          </div>
+          <div className="hidden sm:flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <span className="font-extrabold text-sm sm:text-base text-white tracking-tight leading-tight">
+                Class Hub
+              </span>
+              <span className="text-[10px] font-bold tracking-widest px-1.5 py-0.2 rounded-full bg-white/10 text-white/90 border border-white/15">
+                FTIA
+              </span>
             </div>
+            <span className="text-[10px] text-zinc-400 font-medium leading-tight">
+              Univ. Mitra Bangsa
+            </span>
           </div>
+        </button>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1 shrink-0">
-            {navItems.map(item => {
-              const isActive = activePage === item.id;
+        {/* Tengah: Nav Menu */}
+        <nav className="flex items-center gap-1 sm:gap-2">
+          {navItems.map((item) => {
+            const isActive = activePage === item.id || (item.id === 'prodi' && activePage === 'anggota');
 
-              if (item.id === 'prodi') {
-                return (
-                  <div key={item.id} className="relative group">
-                    <button
-                      onClick={() => handleNavClick('prodi', 'Semua')}
-                      onMouseEnter={() => setProdiDropdownOpen(true)}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all ${
-                        isActive
-                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25'
-                          : isDark
-                            ? 'text-gray-300 hover:text-white hover:bg-gray-800/80'
-                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                      }`}
-                    >
-                      <span>{item.icon}</span>
-                      <span>{item.label}</span>
-                      <span className="text-xs opacity-70">▾</span>
-                    </button>
-
-                    {/* Dropdown Menu per Prodi */}
-                    <div 
-                      onMouseEnter={() => setProdiDropdownOpen(true)}
-                       onMouseLeave={() => setProdiDropdownOpen(false)}
-                      className={`absolute left-0 top-full mt-1 w-56 rounded-2xl p-2 border shadow-xl transition-all duration-200 ease-out transform z-[60] ${
-                        prodiDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-1 pointer-events-none'
-                      } ${
-                        isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-800'
-                      }`}
-                    >
-                      <button
-                        onClick={() => handleNavClick('prodi', 'Semua')}
-                        className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between ${
-                          selectedProdi === 'Semua' && isActive
-                            ? 'bg-indigo-600 text-white'
-                            : isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                        }`}
-                      >
-                        <span>🌟 Semua Mahasiswa</span>
-                        <span className="text-[10px] opacity-70">Semua Prodi</span>
-                      </button>
-                      <div className={`my-1 border-t ${isDark ? 'border-gray-800' : 'border-gray-100'}`} />
-                      {prodiList.map((prodi, idx) => {
-                        const namaProdi = typeof prodi === 'string' ? prodi : prodi?.name || prodi?.nama;
-                        if (!namaProdi) return null;
-                        return (
-                          <button
-                            key={prodi?.id || idx}
-                            onClick={() => handleNavClick('prodi', namaProdi)}
-                            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition-colors ${
-                              selectedProdi === namaProdi && isActive
-                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
-                                : isDark ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'
-                            }`}
-                          >
-                            <span className="truncate">🎓 {namaProdi}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              }
-
+            if (item.id === 'prodi') {
               return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all ${
-                    isActive
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25'
-                      : isDark
-                        ? 'text-gray-300 hover:text-white hover:bg-gray-800/80'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  <span>{item.icon}</span>
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Action Buttons (Admin Portal & Theme Toggle) */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Admin Portal: akses mandiri ke halaman login admin */}
-            <button
-              onClick={() => handleNavClick('admin')}
-              className={`group w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-2 rounded-xl flex items-center justify-center gap-1.5 text-xs font-semibold border transition-all ${
-                isDark
-                  ? 'border-gray-700/80 bg-transparent text-slate-300 hover:border-indigo-500/50 hover:text-indigo-300 hover:bg-indigo-500/10 hover:shadow-[0_0_12px_rgba(99,102,241,0.25)]'
-                  : 'border-gray-200 bg-transparent text-slate-500 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 hover:shadow-[0_0_12px_rgba(99,102,241,0.15)]'
-              }`}
-              title="Buka Admin Portal"
-              aria-label="Buka Admin Portal"
-            >
-              <AdminShieldIcon className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
-              <span className="hidden sm:inline">Admin Portal</span>
-            </button>
-
-            {/* Dark / Light Mode Toggle */}
-            <button
-              onClick={toggleTheme}
-              className={`w-9 h-9 rounded-xl border text-sm flex items-center justify-center transition-all ${
-                isDark
-                  ? 'border-gray-800 bg-gray-900 text-amber-400 hover:bg-gray-800'
-                  : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
-              }`}
-              title={isDark ? 'Beralih ke Light Mode' : 'Beralih ke Dark Mode'}
-            >
-              {isDark ? '☀️' : '🌙'}
-            </button>
-
-            {/* Mobile Hamburger Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`w-9 h-9 md:hidden rounded-xl border text-base flex items-center justify-center ${
-                isDark ? 'border-gray-800 bg-gray-900 text-gray-200' : 'border-gray-200 bg-gray-50 text-gray-700'
-              }`}
-              aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
-            >
-              <MenuIcon open={mobileMenuOpen} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Drawer Navigation */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 top-16 z-50 bg-black/30 md:hidden" onClick={() => setMobileMenuOpen(false)}>
-        <div onClick={(event) => event.stopPropagation()} className={`border-t px-4 pt-3 pb-5 space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto ${
-          isDark ? 'bg-gray-950 border-gray-800' : 'bg-white border-gray-200'
-        }`}>
-          <div className="space-y-1.5">
-            {navItems.map(item => (
-              item.id === 'prodi' ? (
-                <div key={item.id} className="space-y-1">
+                <div key={item.id} className="relative" ref={dropdownRef}>
                   <button
-                    onClick={() => setMobileProdiOpen(!mobileProdiOpen)}
-                    className={`w-full flex items-center justify-between gap-2 min-h-[44px] px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all ${
-                      activePage === item.id
-                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
-                        : isDark ? 'bg-gray-900 text-gray-300' : 'bg-gray-100 text-gray-700'
-                    }`}
-                  ><span className="flex items-center gap-2"><span>{item.icon}</span><span>{item.label}</span></span><span className={`transition-transform duration-200 ${mobileProdiOpen ? 'rotate-180' : ''}`}>▾</span></button>
-                  <div className={`grid transition-all duration-200 ease-out ${mobileProdiOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                    <div className="overflow-hidden pl-3 space-y-1">
-                      {['Semua', ...prodiList].map((prodi, idx) => {
-                        const namaProdi = typeof prodi === 'string' ? prodi : prodi?.name || prodi?.nama;
-                        if (!namaProdi) return null;
-                        return <button key={prodi?.id || namaProdi || idx} onClick={() => handleNavClick('prodi', namaProdi)} className={`w-full min-h-[40px] px-3 rounded-lg text-left text-xs ${selectedProdi === namaProdi ? 'bg-indigo-600 text-white' : isDark ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-200'}`}>{namaProdi === 'Semua' ? '🌟 Semua Mahasiswa' : `🎓 ${namaProdi}`}</button>;
-                      })}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`w-full flex items-center gap-2 min-h-[44px] px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all hover:translate-x-0.5 ${
-                    activePage === item.id ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : isDark ? 'bg-gray-900 text-gray-300' : 'bg-gray-100 text-gray-700'
-                  }`}
-                ><span>{item.icon}</span><span>{item.label}</span></button>
-              )
-            ))}
-          </div>
-
-          <button
-            onClick={() => handleNavClick('admin')}
-            className={`w-full min-h-[44px] flex items-center gap-2 px-3 rounded-xl text-sm font-semibold border ${
-              isDark ? 'border-gray-700 text-gray-300 bg-gray-900' : 'border-gray-200 text-gray-600 bg-gray-50'
-            }`}
-          >
-            <AdminShieldIcon className="w-4 h-4 shrink-0" /> Admin Portal
-          </button>
-
-          {/* Quick Prodi Links in Mobile */}
-          <div className={`mt-3 pt-3 border-t ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Pilih Prodi:</p>
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                onClick={() => handleNavClick('prodi', 'Semua')}
-                className={`min-h-[44px] px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center ${
-                  selectedProdi === 'Semua' && activePage === 'prodi'
-                    ? 'bg-indigo-600 text-white'
-                    : isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-600'
-                }`}
-              >
-                Semua
-              </button>
-              {prodiList.map((prodi, idx) => {
-                const namaProdi = typeof prodi === 'string' ? prodi : prodi?.name || prodi?.nama;
-                if (!namaProdi) return null;
-                return (
-                  <button
-                    key={prodi?.id || idx}
-                    onClick={() => handleNavClick('prodi', namaProdi)}
-                    className={`min-h-[44px] px-2.5 py-1 rounded-lg text-xs font-medium flex items-center ${
-                      selectedProdi === namaProdi && activePage === 'prodi'
-                        ? 'bg-indigo-600 text-white'
-                        : isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-600'
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setProdiDropdownOpen((prev) => !prev);
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0 select-none ${
+                      isActive
+                        ? 'bg-white text-black shadow-md font-bold'
+                        : 'text-zinc-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    {namaProdi}
+                    <item.Icon />
+                    <span className="hidden md:inline">{item.label}</span>
+                    <span className="md:hidden">Prodi</span>
+                    <span className={`text-[10px] transition-transform duration-200 ${prodiDropdownOpen ? 'rotate-180' : ''}`}>
+                      ▾
+                    </span>
                   </button>
-                );
-              })}
-            </div>
-          </div>
+
+                  {/* Dropdown Menu 4 Pilihan Sesuai Permintaan */}
+                  {prodiDropdownOpen && (
+                    <div className="absolute left-0 top-full mt-2 w-64 rounded-2xl border border-white/15 bg-[#141418] p-2 shadow-2xl z-[100] text-white animate-fade-in">
+                      <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 border-b border-white/10">
+                        Pilih Program Studi
+                      </div>
+                      <div className="py-1.5 space-y-1">
+                        {/* 1. Seluruh Prodi */}
+                        <button
+                          type="button"
+                          onClick={() => handleNavClick('prodi', 'Semua')}
+                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors ${
+                            selectedProdi === 'Semua' && isActive
+                              ? 'bg-white text-black font-bold'
+                              : 'text-zinc-200 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span>🌟</span>
+                            <span>Seluruh Prodi</span>
+                          </span>
+                          <span className="text-[10px] text-zinc-400">Semua</span>
+                        </button>
+
+                        {/* 2. Prodi Ilmu Komputer */}
+                        <button
+                          type="button"
+                          onClick={() => handleNavClick('prodi', 'Ilmu Komputer')}
+                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors ${
+                            selectedProdi?.toLowerCase() === 'ilmu komputer' && isActive
+                              ? 'bg-white text-black font-bold'
+                              : 'text-zinc-200 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span>💻</span>
+                            <span>Prodi Ilmu Komputer</span>
+                          </span>
+                          <span className="text-[10px] text-zinc-400">Lihat</span>
+                        </button>
+
+                        {/* 3. Prodi Sistem Informasi */}
+                        <button
+                          type="button"
+                          onClick={() => handleNavClick('prodi', 'Sistem Informasi')}
+                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors ${
+                            selectedProdi?.toLowerCase() === 'sistem informasi' && isActive
+                              ? 'bg-white text-black font-bold'
+                              : 'text-zinc-200 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span>📊</span>
+                            <span>Prodi Sistem Informasi</span>
+                          </span>
+                          <span className="text-[10px] text-zinc-400">Lihat</span>
+                        </button>
+
+                        {/* 4. Prodi Aktuaria */}
+                        <button
+                          type="button"
+                          onClick={() => handleNavClick('prodi', 'Aktuaria')}
+                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors ${
+                            selectedProdi?.toLowerCase() === 'aktuaria' && isActive
+                              ? 'bg-white text-black font-bold'
+                              : 'text-zinc-200 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span>📈</span>
+                            <span>Prodi Aktuaria</span>
+                          </span>
+                          <span className="text-[10px] text-zinc-400">Lihat</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleNavClick(item.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0 ${
+                  isActive
+                    ? 'bg-white text-black shadow-md font-bold'
+                    : 'text-zinc-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <item.Icon />
+                <span className="hidden sm:inline">{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Kanan: Tombol Admin Portal Kapsul */}
+        <div className="shrink-0">
+          <button
+            type="button"
+            onClick={() => setActivePage('admin')}
+            className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-bold border transition-all duration-200 ${
+              activePage === 'admin'
+                ? 'bg-white text-black border-white shadow-md'
+                : 'border-white/15 bg-white/5 text-zinc-300 hover:text-white hover:bg-white/10 hover:border-white/30'
+            }`}
+            title="Buka FTIA Workspace / Admin Portal"
+          >
+            <ShieldIcon />
+            <span className="hidden md:inline">Admin Portal</span>
+            <span className="md:hidden">Admin</span>
+          </button>
         </div>
-        </div>
-      )}
+      </div>
     </header>
   );
 }
-

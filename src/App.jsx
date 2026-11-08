@@ -1,13 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { safeGet, safeSet } from "./utils/storage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Beranda from "./pages/Beranda";
-import Anggota from "./pages/Anggota";
-import Jadwal from "./pages/Jadwal";
-import Tugas from "./pages/Tugas";
-import Menfest from "./pages/Menfest";
-import Admin from "./pages/Admin";
+
+// Code splitting per Section 6.3 agar bundle awal Beranda seringan mungkin
+const Anggota = lazy(() => import("./pages/Anggota"));
+const Jadwal = lazy(() => import("./pages/Jadwal"));
+const Tugas = lazy(() => import("./pages/Tugas"));
+const Menfest = lazy(() => import("./pages/Menfest"));
+const Admin = lazy(() => import("./pages/Admin"));
+
+function PageFallback() {
+  return (
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-6 animate-pulse">
+      <div className="h-8 w-48 rounded-xl bg-white/5" />
+      <div className="h-4 w-72 rounded-lg bg-white/5" />
+      <div className="h-14 w-full rounded-[22px] bg-white/5" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
+        <div className="h-44 rounded-[22px] bg-white/5" />
+        <div className="h-44 rounded-[22px] bg-white/5" />
+        <div className="h-44 rounded-[22px] bg-white/5" />
+      </div>
+    </div>
+  );
+}
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import { initialProdi, classInfo as defaultClassInfo } from "./data/dummy";
 import {
@@ -216,6 +233,7 @@ function AppContent() {
         isLoggedIn={isAdminLoggedIn}
         onLogin={handleAdminLogin}
         onLogout={handleAdminLogout}
+        onBackToHome={() => setActivePage('beranda')}
         anggotaList={anggotaList}
         onUpdateAnggota={(list) => {
           setAnggotaList(list);
@@ -234,34 +252,33 @@ function AppContent() {
     ),
   };
 
-  // Daftar halaman publik mahasiswa yang boleh menampilkan Footer.
-  // "admin" sengaja TIDAK dimasukkan ke daftar ini sehingga komponen Footer
-  // lenyap total di seluruh mode Admin Dashboard — baik saat layar login
-  // maupun setelah admin berhasil masuk (Data Anggota, Galeri, Tugas,
-  // Jadwal, Database, Keamanan, dll).
+  // Daftar halaman publik mahasiswa yang menampilkan Navbar & Footer.
+  // "admin" memiliki layout login / workspace mandiri tanpa navbar publik yang menutupi konten.
   const PUBLIC_PAGES = ["beranda", "prodi", "anggota", "jadwal", "tugas", "menfest"];
-  const showFooter = PUBLIC_PAGES.includes(activePage);
+  const isPublicPage = PUBLIC_PAGES.includes(activePage);
 
   return (
     <div
-      className={`min-h-screen w-full overflow-x-hidden flex flex-col transition-colors duration-200 ${
-        isDark ? "bg-gray-950 text-white" : "bg-slate-50 text-gray-900"
-      }`}
+      className="min-h-screen w-full overflow-x-hidden flex flex-col bg-[#09090B] text-white selection:bg-white/20 selection:text-white"
     >
-      <Navbar
-        activePage={activePage}
-        setActivePage={setActivePage}
-        selectedProdi={selectedProdi}
-        setSelectedProdi={setSelectedProdi}
-        prodiList={prodiList}
-      />
+      {isPublicPage && (
+        <Navbar
+          activePage={activePage}
+          setActivePage={setActivePage}
+          selectedProdi={selectedProdi}
+          setSelectedProdi={setSelectedProdi}
+          prodiList={prodiList}
+        />
+      )}
 
-      <main className="flex-1">{pages[activePage] || pages.beranda}</main>
+      <main className="flex-1 pb-16">
+        <Suspense fallback={<PageFallback />}>
+          {pages[activePage] || pages.beranda}
+        </Suspense>
+      </main>
 
-      {/* Footer hanya dirender di halaman publik mahasiswa.
-          Di mode Admin Dashboard footer tidak dirender sama sekali (null)
-          agar layout admin menjadi full-height yang bersih dan mandiri. */}
-      {showFooter && <Footer setActivePage={setActivePage} />}
+      {/* Footer hanya dirender di halaman publik mahasiswa. */}
+      {isPublicPage && <Footer setActivePage={setActivePage} />}
     </div>
   );
 }

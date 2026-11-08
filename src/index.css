@@ -1,109 +1,173 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-canvas: #09090B;
+    --surface-card: #141418;
+    --surface-elevated: #1F1F26;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-glass: rgba(255, 255, 255, 0.14);
+    --text-primary: #FFFFFF;
+    --text-secondary: #9E9EA9;
+    --text-muted: #6E6E77;
+  }
+
   * {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
   }
+
   html, body, #root {
-    height: 100%;
+    min-height: 100%;
     max-width: 100%;
+    background-color: #09090B;
+    color: #FFFFFF;
     overflow-x: hidden;
   }
+
+  /* Custom Slim AMOLED Scrollbar */
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #09090B;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(79, 70, 229, 0.5);
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(79, 70, 229, 0.8);
+    background: rgba(255, 255, 255, 0.32);
   }
 }
 
 @layer utilities {
-  .glass {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
+  /* AMOLED Glassmorphism Floating Capsule */
+  .glass-pill {
+    background: rgba(20, 20, 24, 0.75);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75);
   }
-  .glass-light {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    background: rgba(255,255,255,0.7);
-    border: 1px solid rgba(0,0,0,0.06);
+
+  /* Solid AMOLED Card */
+  .card-amoled {
+    background: #141418;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
   }
-  .animate-float {
-    animation: float 4s ease-in-out infinite;
+
+  .card-amoled-hover {
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease, background-color 180ms ease;
   }
-  .animate-float-slow {
-    animation: float 6s ease-in-out infinite;
+  .card-amoled-hover:hover {
+    transform: translateY(-2px) scale(1.008);
+    background: #18181D;
+    border-color: rgba(255, 255, 255, 0.16);
   }
-  .animate-slide-in {
-    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  .card-amoled-hover:active {
+    transform: scale(0.97);
   }
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease forwards;
+
+  /* Tactile Spring Press */
+  .spring-press {
+    transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .gradient-text {
-    background: linear-gradient(135deg, #4F46E5, #9333EA);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .spring-press:hover {
+    transform: translateY(-1px) scale(1.02);
   }
-  .gradient-text-emerald {
-    background: linear-gradient(135deg, #10B981, #059669);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .spring-press:active {
+    transform: scale(0.95);
   }
-  .gradient-border {
+
+  /* Active Pill Tag */
+  .pill-active {
+    background: #FFFFFF !important;
+    color: #09090B !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(255, 255, 255, 0.25);
+  }
+
+  .pill-inactive {
+    background: rgba(255, 255, 255, 0.06);
+    color: #9E9EA9;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .pill-inactive:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  /* Ambient Flame Glow Effect */
+  .flame-glow {
     position: relative;
   }
-  .gradient-border::before {
+  .flame-glow::before {
     content: '';
     position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    background: linear-gradient(135deg, #4F46E5, #9333EA);
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.3s;
+    inset: -6px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(255, 122, 0, 0.45) 0%, rgba(255, 61, 0, 0.15) 60%, transparent 80%);
+    animation: flamePulse 2.4s ease-in-out infinite alternate;
+    z-index: 0;
+    pointer-events: none;
   }
-  .gradient-border:hover::before {
-    opacity: 1;
+
+  /* Hide scrollbar helper */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(16px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0)    scale(1);    }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  @keyframes shimmer {
-    0%   { background-position: -200% 0; }
-    100% { background-position:  200% 0; }
-  }
-  .shimmer {
-    background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.06) 50%, transparent 75%);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 
+/* 60fps GPU-Accelerated Keyframes */
+@keyframes flamePulse {
+  0% {
+    transform: scale(0.94);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.12);
+    opacity: 0.95;
+  }
+}
+
+@keyframes eqBar1 {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes eqBar2 {
+  0%, 100% { transform: scaleY(0.85); }
+  50% { transform: scaleY(0.3); }
+}
+
+@keyframes eqBar3 {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(0.95); }
+}
+
+.animate-eq-1 {
+  animation: eqBar1 0.75s ease-in-out infinite;
+  transform-origin: bottom;
+}
+.animate-eq-2 {
+  animation: eqBar2 0.85s ease-in-out infinite;
+  transform-origin: bottom;
+}
+.animate-eq-3 {
+  animation: eqBar3 0.65s ease-in-out infinite;
+  transform-origin: bottom;
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import logoFtia from "../assets/logoftia.jpeg";
 import { useTheme } from "../context/ThemeContext";
 import {
   getSupabaseConfig,
@@ -276,29 +277,25 @@ function StructureCard({ item, index, isDark, inputClass, onChange }) {
   );
 }
 
-function StatCard({ label, value, detail, icon, accent, isDark }) {
+function StatCard({ label, value, detail, icon, accent }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border p-4 sm:p-5 ${isDark ? "border-white/10 bg-white/[0.045]" : "border-slate-200 bg-white shadow-sm"}`}
+      className="relative overflow-hidden rounded-[20px] border border-white/[0.08] bg-[#141418] p-4 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20"
     >
       <div
         className={`absolute -right-7 -top-7 h-24 w-24 rounded-full blur-2xl ${accent}`}
       />
       <div className="relative flex items-start justify-between gap-3">
         <div>
-          <p
-            className={`text-xs font-semibold ${isDark ? "text-slate-400" : "text-slate-500"}`}
-          >
+          <p className="text-xs font-semibold text-zinc-400">
             {label}
           </p>
-          <p className="mt-2 text-2xl sm:text-3xl font-black tracking-tight">{value}</p>
-          <p
-            className={`mt-1 text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}
-          >
+          <p className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-white">{value}</p>
+          <p className="mt-1 text-[11px] text-zinc-500">
             {detail}
           </p>
         </div>
-        <span className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-500/15 text-lg text-indigo-400">
+        <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/5 border border-white/10 text-lg text-white">
           {icon}
         </span>
       </div>
@@ -371,6 +368,7 @@ export default function Admin({
   isLoggedIn,
   onLogin,
   onLogout,
+  onBackToHome,
   anggotaList = [],
   onUpdateAnggota,
   prodiList = [],
@@ -911,37 +909,42 @@ export default function Admin({
 
   if (!isLoggedIn) {
     return (
-      <section className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/90 backdrop-blur-md p-4 h-[100dvh] w-screen overflow-hidden">
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/10 blur-3xl" />
+      <section className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 h-[100dvh] w-screen overflow-hidden">
         <Toast toast={toast} onClose={() => setToast(null)} />
         <div
-          className={`relative m-auto max-h-full w-full max-w-[460px] overflow-y-auto rounded-[2rem] border p-7 shadow-2xl sm:p-10 ${isDark ? "border-white/10 bg-[#0d1020]" : "border-slate-200 bg-white"}`}
+          className="relative m-auto max-h-full w-full max-w-[440px] overflow-y-auto rounded-[28px] border border-white/10 bg-[#141418] p-7 sm:p-10 text-white shadow-2xl"
         >
-          <div className="mb-8 flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-indigo-500/15 text-xl text-indigo-400">
-              ⌘
+          <div className="mb-7 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/5 border border-white/10 text-xl text-white">
+                ⌘
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">
+                  Class Hub FTIA
+                </p>
+                <p className="mt-0.5 text-xs text-zinc-500">
+                  Secure administration portal
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-400">
-                Class Hub FTIA
-              </p>
-              <p
-                className={`mt-1 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}
+            {onBackToHome && (
+              <button
+                type="button"
+                onClick={onBackToHome}
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/10 transition"
               >
-                Secure administration portal
-              </p>
-            </div>
+                ← Beranda
+              </button>
+            )}
           </div>
-          <h1 className="text-3xl font-black tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
             Selamat datang kembali.
           </h1>
-          <p
-            className={`mt-2 text-sm leading-6 ${isDark ? "text-slate-400" : "text-slate-500"}`}
-          >
-            Masuk untuk mengelola data fakultas, anggota, dan aktivitas Class
-            Hub.
+          <p className="mt-2 text-xs sm:text-sm leading-relaxed text-zinc-400">
+            Masuk untuk mengelola data fakultas, anggota, dan aktivitas Class Hub.
           </p>
-          <form onSubmit={handleLogin} className="mt-8 space-y-4">
+          <form onSubmit={handleLogin} className="mt-7 space-y-4">
             <Field label="Email">
               <input
                 required
@@ -950,7 +953,7 @@ export default function Admin({
                 onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
                 placeholder="admin@contoh.com"
-                className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 ${isDark ? "border-white/10 bg-black/20" : "border-slate-200 bg-slate-50"}`}
+                className="w-full rounded-xl border border-white/10 bg-[#18181D] px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-white/30"
               />
             </Field>
             <Field label="Password">
@@ -961,21 +964,19 @@ export default function Admin({
                 onChange={(event) => setPassword(event.target.value)}
                 autoComplete="current-password"
                 placeholder="Masukkan password"
-                className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 ${isDark ? "border-white/10 bg-black/20" : "border-slate-200 bg-slate-50"}`}
+                className="w-full rounded-xl border border-white/10 bg-[#18181D] px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-white/30"
               />
             </Field>
             <button
               type="submit"
               disabled={loginLoading}
-              className="w-full rounded-xl bg-indigo-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full rounded-full bg-white px-4 py-3.5 text-sm font-bold text-black shadow-lg transition hover:bg-zinc-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 active:scale-95"
             >
               {loginLoading ? "Memverifikasi..." : <>Masuk ke Dashboard <span aria-hidden="true">→</span></>}
             </button>
           </form>
-          <p
-            className={`mt-6 text-center text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}
-          >
-            Akses terbatas untuk administrator Class Hub.
+          <p className="mt-6 text-center text-[11px] text-zinc-500">
+            Akses terbatas untuk administrator Class Hub FTIA.
           </p>
         </div>
       </section>
@@ -989,123 +990,166 @@ export default function Admin({
   // bila storage lama atau respons jaringan tidak berbentuk array.
   const safeTugasList = Array.isArray(tugasList) ? tugasList : [];
   const safeJadwalList = Array.isArray(jadwalList) ? jadwalList : [];
-  const inputClass = `w-full rounded-xl border px-3 py-2.5 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 ${isDark ? "border-white/10 bg-black/20" : "border-slate-200 bg-slate-50"}`;
-  const panelClass = `rounded-2xl border p-5 sm:p-6 ${isDark ? "border-white/10 bg-white/[0.045]" : "border-slate-200 bg-white shadow-sm"}`;
+  const inputClass = "w-full rounded-xl border border-white/10 bg-[#18181D] px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-white/30";
+  const panelClass = "rounded-[22px] border border-white/[0.08] bg-[#141418] p-5 sm:p-6";
 
   return (
     <div
-      className={`min-h-[calc(100vh-4rem)] ${isDark ? "bg-[#090b16]" : "bg-slate-50"}`}
+      className="min-h-[calc(100vh-4rem)] bg-[#09090B] text-white"
     >
       <Toast toast={toast} onClose={() => setToast(null)} />
       <div className="mx-auto flex max-w-[1600px]">
         {sidebarOpen && (
           <button
             type="button"
-            className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+            className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
             onClick={() => setSidebarOpen(false)}
             aria-label="Tutup menu"
           />
         )}
         <aside
-          className={`fixed inset-y-0 left-0 z-40 w-72 transform border-r px-4 py-5 transition-transform lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} ${isDark ? "border-white/10 bg-[#0d1020]" : "border-slate-200 bg-white"}`}
+          className={`fixed inset-y-0 left-0 z-40 w-72 shrink-0 border-r border-white/[0.08] bg-[#09090B] px-4 py-5 transition-all duration-300 ease-in-out flex flex-col justify-between lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto ${
+            sidebarOpen
+              ? "translate-x-0 opacity-100"
+              : "-translate-x-full opacity-0 pointer-events-none lg:w-0 lg:p-0 lg:border-none"
+          }`}
         >
-          <div className="flex items-center justify-between px-3 pb-7">
-            <div>
-              <p className="text-sm font-black tracking-tight">
-                Class Hub <span className="text-indigo-400">/ Admin</span>
-              </p>
-              <p
-                className={`mt-1 text-[10px] uppercase tracking-[0.18em] ${isDark ? "text-slate-500" : "text-slate-400"}`}
-              >
-                FTIA workspace
-              </p>
-            </div>
-            <button
-              type="button"
-              className="text-xl text-slate-400 lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-              aria-label="Tutup sidebar"
-            >
-              ×
-            </button>
-          </div>
-          <p
-            className={`px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] ${isDark ? "text-slate-500" : "text-slate-400"}`}
-          >
-            Workspace
-          </p>
-          <nav className="space-y-1">
-            {sections.map((section) => (
+          <div className={`${sidebarOpen ? "opacity-100" : "opacity-0"} transition-opacity duration-200`}>
+            <div className="flex items-center justify-between px-2 pb-6">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-xl overflow-hidden border border-white/20 bg-[#16161C] shrink-0 shadow-md">
+                  <img
+                    src={logoFtia}
+                    alt="Logo FTIA"
+                    className="w-full h-full object-cover"
+                    width={36}
+                    height={36}
+                  />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold tracking-tight text-white leading-tight truncate">
+                    Class Hub <span className="text-zinc-400">/ Admin</span>
+                  </p>
+                  <p className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-zinc-500 font-bold leading-tight">
+                    FTIA WORKSPACE
+                  </p>
+                </div>
+              </div>
               <button
-                key={section.id}
                 type="button"
-                onClick={() => navigate(section.id)}
-                className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold transition ${activeSection === section.id ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20" : isDark ? "text-slate-400 hover:bg-white/[0.06] hover:text-white" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
+                className="grid h-8 w-8 place-items-center rounded-xl border border-white/10 bg-[#141418] text-zinc-400 hover:text-white hover:border-white/20 transition active:scale-95 shrink-0 ml-1"
+                onClick={() => setSidebarOpen(false)}
+                title="Tutup menu ke kiri"
+                aria-label="Tutup menu ke kiri"
               >
-                <span className="grid h-7 w-7 place-items-center rounded-lg bg-current/10 text-base">
-                  {renderStructureIcon(section.icon)}
-                </span>
-                {section.label}
-                {section.id === "menfest" && menfestList.length > 0 && (
-                  <span className="ml-auto rounded-full bg-pink-500/15 px-2 py-0.5 text-[10px] text-pink-400">
-                    {menfestList.length}
-                  </span>
-                )}
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
               </button>
-            ))}
-          </nav>
-          <div
-            className={`absolute bottom-5 left-4 right-4 rounded-2xl border p-3 ${isDark ? "border-white/10 bg-white/[0.04]" : "border-slate-200 bg-slate-50"}`}
-          >
-            <p className="text-xs font-bold">Admin aktif</p>
-            <p
-              className={`mt-1 truncate text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}
-            >
-              Sesi Supabase aktif
+            </div>
+
+            <div className="rounded-[22px] border border-white/[0.08] bg-[#141418] p-2 space-y-1">
+              <p className="px-3 pt-2 pb-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500">
+                Workspace Menu
+              </p>
+              <nav className="space-y-1">
+                {sections.map((section) => {
+                  const isActive = activeSection === section.id;
+                  return (
+                    <button
+                      key={section.id}
+                      type="button"
+                      onClick={() => navigate(section.id)}
+                      className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs sm:text-sm font-semibold transition-all duration-150 active:scale-95 ${
+                        isActive
+                          ? "bg-white text-black shadow-md font-bold"
+                          : "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className={`grid h-6 w-6 place-items-center rounded-lg text-sm ${isActive ? 'bg-black/10' : 'bg-white/5'}`}>
+                          {renderStructureIcon(section.icon)}
+                        </span>
+                        <span className="truncate">{section.label}</span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {section.id === "menfest" && menfestList.length > 0 && (
+                          <span className={`rounded-full px-2 py-0.2 text-[10px] font-bold ${isActive ? 'bg-black/15 text-black' : 'bg-pink-500/20 text-pink-400'}`}>
+                            {menfestList.length}
+                          </span>
+                        )}
+                        <span className={`text-xs ${isActive ? 'text-black/60' : 'text-zinc-600'}`}>›</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+          </div>
+
+          <div className={`mt-4 shrink-0 rounded-[20px] border border-white/[0.08] bg-[#141418] p-3.5 ${sidebarOpen ? "opacity-100" : "opacity-0"} transition-opacity duration-200`}>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <p className="text-xs font-bold text-white">Sesi Supabase Aktif</p>
+            </div>
+            <p className="mt-1 text-[11px] text-zinc-500">
+              Akses Administrator Resmi
             </p>
             <button
               type="button"
               onClick={onLogout}
-              className="mt-3 text-xs font-bold text-rose-400 transition hover:text-rose-300"
+              className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 py-2 text-xs font-bold text-rose-300 transition hover:bg-rose-500/20 active:scale-95"
             >
-              Keluar dari portal →
+              <span>🚪</span>
+              <span>Keluar dari portal</span>
             </button>
           </div>
         </aside>
 
-        <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-10 lg:py-8">
+        <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-10 lg:py-8 transition-all duration-300">
           <header className="mb-8 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0 flex-1">
-              <button
-                type="button"
-                onClick={() => setSidebarOpen(true)}
-                className={`shrink-0 grid h-10 w-10 place-items-center rounded-xl border lg:hidden ${isDark ? "border-white/10 bg-white/[0.05]" : "border-slate-200 bg-white"}`}
-                aria-label="Buka menu"
-              >
-                ☰
-              </button>
-              <div className="min-w-0">
-                <p
-                  className={`text-xs font-semibold ${isDark ? "text-slate-500" : "text-slate-400"}`}
+              {!sidebarOpen && (
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(true)}
+                  className="shrink-0 flex items-center gap-2 rounded-xl border border-white/10 bg-[#141418] px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:border-white/20 transition active:scale-95 shadow-md"
+                  title="Buka Menu Bar"
                 >
-                  Admin Dashboard / {activeLabel}
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  <span>Buka Menu</span>
+                </button>
+              )}
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-zinc-500">
+                  FTIA Workspace / {activeLabel}
                 </p>
-                <h1 className="mt-1 text-xl sm:text-2xl lg:text-3xl font-black tracking-tight">
+                <h1 className="mt-1 text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white">
                   {activeSection === "overview"
-                    ? "Selamat pagi, Admin."
+                    ? "Selamat datang, Admin."
                     : activeLabel}
                 </h1>
               </div>
             </div>
-            <div
-              className={`hidden sm:flex items-center gap-3 rounded-xl border px-3 py-2 shrink-0 ${isDark ? "border-white/10 bg-white/[0.04]" : "border-slate-200 bg-white"}`}
-            >
-              <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.12)]" />
-              <span
-                className={`text-xs font-semibold ${isDark ? "text-slate-300" : "text-slate-600"}`}
+            <div className="flex items-center gap-2.5">
+              <div className="hidden sm:flex items-center gap-2.5 rounded-full border border-white/10 bg-[#141418] px-4 py-2 shrink-0">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+                <span className="text-xs font-semibold text-zinc-300">
+                  Administrator
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={onLogout}
+                className="flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-bold text-rose-300 hover:bg-rose-500/20 active:scale-95 transition"
+                title="Keluar dari Admin Portal"
               >
-                Administrator
-              </span>
+                <span>🚪</span>
+                <span>Logout</span>
+              </button>
             </div>
           </header>
 
@@ -1118,7 +1162,6 @@ export default function Admin({
                   detail="Profil terdaftar"
                   icon="♙"
                   accent="bg-indigo-500/20"
-                  isDark={isDark}
                 />
                 <StatCard
                   label="Program Studi"
@@ -1126,7 +1169,6 @@ export default function Admin({
                   detail="Prodi aktif"
                   icon="⌘"
                   accent="bg-violet-500/20"
-                  isDark={isDark}
                 />
                 <StatCard
                   label="Pesan Menfest"
@@ -1134,7 +1176,6 @@ export default function Admin({
                   detail="Perlu moderasi"
                   icon="✉"
                   accent="bg-pink-500/20"
-                  isDark={isDark}
                 />
                 <StatCard
                   label="Status Portal"
@@ -1142,59 +1183,50 @@ export default function Admin({
                   detail="Sesi tersimpan"
                   icon="✓"
                   accent="bg-emerald-500/20"
-                  isDark={isDark}
                 />
               </div>
               <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.35fr_1fr]">
                 <section className={panelClass}>
                   <div className="mb-5 flex items-center justify-between gap-3">
                     <div>
-                      <h2 className="font-black">Aksi cepat</h2>
-                      <p
-                        className={`mt-1 text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}
-                      >
+                      <h2 className="font-bold text-white">Aksi cepat</h2>
+                      <p className="mt-1 text-xs text-zinc-400">
                         Kelola area penting dalam satu klik.
                       </p>
                     </div>
-                    <span className="text-xl text-indigo-400">✦</span>
+                    <span className="text-xl text-zinc-400">✦</span>
                   </div>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <button
                       type="button"
                       onClick={() => navigate("anggota")}
-                      className={`rounded-xl border p-4 text-left transition hover:-translate-y-0.5 ${isDark ? "border-white/10 bg-white/[0.03] hover:bg-white/[0.07]" : "border-slate-200 bg-slate-50 hover:bg-indigo-50"}`}
+                      className="rounded-2xl border border-white/10 bg-[#18181D] p-4 text-left transition hover:-translate-y-0.5 hover:border-white/20 active:scale-95"
                     >
-                      <span className="text-lg text-indigo-400">＋</span>
-                      <p className="mt-3 text-sm font-bold">Tambah anggota</p>
-                      <p
-                        className={`mt-1 text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}
-                      >
+                      <span className="text-lg text-white">＋</span>
+                      <p className="mt-3 text-sm font-bold text-white">Tambah anggota</p>
+                      <p className="mt-0.5 text-[11px] text-zinc-400">
                         Buat profil baru
                       </p>
                     </button>
                     <button
                       type="button"
                       onClick={() => navigate("menfest")}
-                      className={`rounded-xl border p-4 text-left transition hover:-translate-y-0.5 ${isDark ? "border-white/10 bg-white/[0.03] hover:bg-white/[0.07]" : "border-slate-200 bg-slate-50 hover:bg-indigo-50"}`}
+                      className="rounded-2xl border border-white/10 bg-[#18181D] p-4 text-left transition hover:-translate-y-0.5 hover:border-white/20 active:scale-95"
                     >
                       <span className="text-lg text-pink-400">✉</span>
-                      <p className="mt-3 text-sm font-bold">Moderasi Menfest</p>
-                      <p
-                        className={`mt-1 text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}
-                      >
+                      <p className="mt-3 text-sm font-bold text-white">Moderasi Menfest</p>
+                      <p className="mt-0.5 text-[11px] text-zinc-400">
                         Review pesan publik
                       </p>
                     </button>
                     <button
                       type="button"
                       onClick={() => navigate("settings")}
-                      className={`rounded-xl border p-4 text-left transition hover:-translate-y-0.5 ${isDark ? "border-white/10 bg-white/[0.03] hover:bg-white/[0.07]" : "border-slate-200 bg-slate-50 hover:bg-indigo-50"}`}
+                      className="rounded-2xl border border-white/10 bg-[#18181D] p-4 text-left transition hover:-translate-y-0.5 hover:border-white/20 active:scale-95"
                     >
                       <span className="text-lg text-amber-400">⚙</span>
-                      <p className="mt-3 text-sm font-bold">Atur website</p>
-                      <p
-                        className={`mt-1 text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}
-                      >
+                      <p className="mt-3 text-sm font-bold text-white">Atur website</p>
+                      <p className="mt-0.5 text-[11px] text-zinc-400">
                         Info dan identitas
                       </p>
                     </button>
@@ -1202,11 +1234,11 @@ export default function Admin({
                 </section>
                 <section className={panelClass}>
                   <div className="mb-4 flex items-center justify-between">
-                    <h2 className="font-black">Anggota terbaru</h2>
+                    <h2 className="font-bold text-white">Anggota terbaru</h2>
                     <button
                       type="button"
                       onClick={() => navigate("anggota")}
-                      className="text-xs font-bold text-indigo-400"
+                      className="text-xs font-bold text-zinc-400 hover:text-white"
                     >
                       Lihat semua →
                     </button>
@@ -1214,25 +1246,28 @@ export default function Admin({
                   {anggotaList.slice(0, 5).map((member) => (
                     <div
                       key={member.id}
-                      className="flex items-center gap-3 border-b border-current/5 py-3 last:border-0"
+                      className="flex items-center gap-3 border-b border-white/5 py-2.5 last:border-0"
                     >
                       <img
                         src={member.photo}
                         alt=""
-                        className="h-9 w-9 rounded-xl bg-indigo-500/10 object-cover"
+                        width={36}
+                        height={36}
+                        loading="lazy"
+                        className="h-9 w-9 rounded-xl bg-[#1C1C22] object-cover border border-white/10"
                       />
                       <div className="min-w-0">
-                        <p className="truncate text-xs font-bold">
+                        <p className="truncate text-xs font-bold text-white">
                           {member.name}
                         </p>
-                        <p className="truncate text-[11px] text-indigo-400">
+                        <p className="truncate text-[11px] text-zinc-400">
                           {member.prodi}
                         </p>
                       </div>
                     </div>
                   ))}
                   {anggotaList.length === 0 && (
-                    <p className="py-6 text-center text-xs text-slate-500">
+                    <p className="py-6 text-center text-xs text-zinc-500">
                       Belum ada data anggota.
                     </p>
                   )}

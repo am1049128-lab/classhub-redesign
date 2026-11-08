@@ -25,3 +25,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Temp & local duplicates
+class hub/
+class hub id/
+memory/
+build-output.txt
